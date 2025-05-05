@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: keycloak
+      KC_PROXY: edge
+      # KC_HTTP_RELATIVE_PATH: /src
+    command: ["start-dev"]
+    ports:
+      - "8080:8080"
+    networks:
+      - est-network
+
+  cassandra:
+    image: cassandra:5.0.4
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=est-cluster
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe keyspaces'"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    networks:
+      - est-network
+
+  fastapi:
+    build: ./est-sale-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - KEYCLOAK_SERVER_URL=http://keycloak:8080
+      - KEYCLOAK_REALM=ent-realm
+      - KEYCLOAK_CLIENT_ID=ent-client
+      - CASSANDRA_HOST=cassandra
+    depends_on:
+      cassandra:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+    networks:
+      - est-network
+
+  frontend:
+    build: ./est-sale-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_KEYCLOAK_URL=http://localhost:8080
+      - REACT_APP_REALM=ent-realm
+      - REACT_APP_CLIENT_ID=ent-client
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on:
+      - fastapi
+    networks:
+      - est-network
+
+volumes:
+  cassandra_data:
+
+networks:
+  est-network:
+    driver: bridge
