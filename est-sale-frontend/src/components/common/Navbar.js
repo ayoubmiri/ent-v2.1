@@ -1,10 +1,14 @@
+// src/components/common/Navbar.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
+  
+
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { login, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
@@ -55,7 +59,13 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-              <Link to="/connexion" className="px-3 py-1 bg-est-yellow text-black rounded hover:bg-yellow-600 transition">Connexion</Link>
+              <button
+            onClick={login}
+            disabled={loading}
+             className="px-3 py-1 bg-est-yellow text-black rounded hover:bg-yellow-600 transition">
+            {loading ? 'Chargement...' : 'Connexion'}
+          </button>
+              //<Link to="/connexion" className="px-3 py-1 bg-est-yellow text-black rounded hover:bg-yellow-600 transition">Connexion</Link>
             )}
           </nav>
           
@@ -95,7 +105,14 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-              <Link to="/connexion" className="px-3 py-2 bg-est-yellow text-black rounded hover:bg-yellow-600 transition text-center" onClick={() => setMobileMenuOpen(false)}>Connexion</Link>
+                 <button
+            onClick={login}
+            disabled={loading}
+             className="px-3 py-1 bg-est-yellow text-black rounded hover:bg-yellow-600 transition">
+            {loading ? 'Chargement...' : 'Connexion'}
+          </button>
+              
+              //<Link to="/connexion" className="px-3 py-2 bg-est-yellow text-black rounded hover:bg-yellow-600 transition text-center" onClick={() => setMobileMenuOpen(false)}>Connexion</Link>
             )}
           </div>
         </div>

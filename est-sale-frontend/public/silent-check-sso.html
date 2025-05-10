@@ -1,19 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Silent Check SSO</title>
-  <script>
-    window.onload = function() {
-      window.parent.postMessage({
-        type: 'keycloak-silent-check-sso',
-        href: window.location.href
-      }, window.location.origin);
-    };
-  </script>
-</head>
-<body>
-  <noscript>
-    You need to enable JavaScript to run this app.
-  </noscript>
-</body>
+  <head>
+    <title>Silent Check SSO</title>
+  </head>
+  <body>
+    <script>
+      parent.postMessage(location.href, location.origin);
+    </script>
+  </body>
 </html>

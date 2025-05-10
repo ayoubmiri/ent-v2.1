@@ -1,60 +1,64 @@
-import { useState, useEffect, useContext, createContext } from 'react';
-import { auth } from '../services/auth';
-import { useNavigate } from 'react-router-dom';
+// src/hooks/useAuth.js
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import keycloak from '../keycloak';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const initialized = useRef(false);  // Ensures Keycloak only initializes once
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const userData = await auth.checkAuth();
-        setUser(userData);
-      } catch (error) {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkAuth();
+    // Check if the user token is already stored in localStorage
+    const storedToken = localStorage.getItem('keycloak_token');
+    const storedUser = JSON.parse(localStorage.getItem('keycloak_user'));
+    if (storedToken && storedUser) {
+      // If stored token and user data exist, restore session
+      keycloak.token = storedToken;
+      keycloak.tokenParsed = storedUser;
+      setUser(storedUser);
+    }
+
+    if (initialized.current) return; // Avoid re-initializing Keycloak
+    initialized.current = true;
+
+    keycloak
+      .init({
+        onLoad: 'check-sso',
+        silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+      })
+      .then((authenticated) => {
+        if (authenticated) {
+          const profile = {
+            username: keycloak.tokenParsed?.preferred_username,
+            role: keycloak.tokenParsed?.realm_access?.roles?.[0] || 'user',
+          };
+          setUser(profile);
+          
+          // Store the token and user data in localStorage for persistence
+          localStorage.setItem('keycloak_token', keycloak.token);
+          localStorage.setItem('keycloak_user', JSON.stringify(profile));
+        }
+      })
+      .catch((err) => {
+        console.error('Keycloak init failed', err);
+      });
   }, []);
 
-  const login = async (credentials) => {
-    try {
-      const userData = await auth.login(credentials);
-      setUser(userData);
-      
-      // Redirect based on role after login
-      if (userData.role === 'etudiant') {
-        navigate('/profil/etudiant');
-      } else if (userData.role === 'enseignant') {
-        navigate('/profil/enseignant');
-      }
-      
-      return userData;
-    } catch (error) {
-      throw error;
-    }
+  const login = () => {
+    keycloak.login();
   };
 
-  const logout = async () => {
-    try {
-      await auth.logout();
-      setUser(null);
-      navigate('/');
-      return true;
-    } catch (error) {
-      console.error("Logout failed:", error);
-      return false;
-    }
+  const logout = () => {
+    // Remove session data from localStorage on logout
+    localStorage.removeItem('keycloak_token');
+    localStorage.removeItem('keycloak_user');
+    keycloak.logout();
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,27 +1,25 @@
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
-const PrivateRoute = ({ role }) => {
-  const { user, loading } = useAuth();
+const PrivateRoute = ({ children, role }) => {
+  const { authenticated, user, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-est-blue"></div>
-      </div>
-    );
+    return <div className="flex justify-center items-center h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-est-blue"></div>
+    </div>;
   }
 
-  if (!user) {
-    return <Navigate to="/connexion" />;
+  if (!authenticated) {
+    return <Navigate to="/login" />;
   }
 
-  if (role && user.role !== role) {
+  if (role && !user?.roles?.includes(role)) {
     return <Navigate to="/" />;
   }
 
-  return <Outlet />;
+  return children;
 };
 
 export default PrivateRoute;

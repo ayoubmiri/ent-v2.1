@@ -1,0 +1,63 @@
+{
+  "realm": "ent-realm",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "ent-client",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": [
+        "http://localhost:3000/*",
+        "http://localhost:3000/silent-check-sso.html"
+      ],
+      "webOrigins": ["http://localhost:3000"],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "attributes": {
+        "exclude.session.state.from.auth.response": "true",
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "etudiant",
+      "enabled": true,
+      "email": "etudiant@estsale.ma",
+      "firstName": "Ahmed",
+      "lastName": "El Amrani",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password"
+        }
+      ],
+      "realmRoles": ["etudiant"]
+    },
+    {
+      "username": "enseignant",
+      "enabled": true,
+      "email": "enseignant@estsale.ma",
+      "firstName": "Fatima",
+      "lastName": "Benali",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password"
+        }
+      ],
+      "realmRoles": ["enseignant"]
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "etudiant"
+      },
+      {
+        "name": "enseignant"
+      }
+    ]
+  }
+}
