@@ -12,6 +12,8 @@ import EnseignantProfile from './pages/EnseignantProfile';
 import PrivateRoute from './components/common/PrivateRoute';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
+import EspaceEtudiant from './pages/EspaceEtudiant';
+import EspaceEnseignant from './pages/EspaceEnseignant';
 
 function App() {
   return (
@@ -26,7 +28,21 @@ function App() {
         <Route path="/actualites" element={<NewsPage />} />
         <Route path="/evenements" element={<EventsPage />} />
         <Route path="/contact" element={<ContactPage />} />
-                    
+        
+        {/* espace Private Routes */}
+        <Route path="/espace-etudiant" element={
+            <PrivateRoute role="etudiant">
+              <EspaceEtudiant />
+            </PrivateRoute>
+          } />
+        
+        <Route path="/espace-enseignant" element={
+            <PrivateRoute role="enseignant">
+              <EspaceEnseignant />
+            </PrivateRoute>
+          } />
+        
+        {/* Profile Private Routes */}         
         <Route path="/profil/etudiant" element={
             <PrivateRoute role="etudiant">
               <EtudiantProfile />

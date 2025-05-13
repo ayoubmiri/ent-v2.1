@@ -12,7 +12,7 @@ services:
       KC_DB: dev-file
     volumes:
       - ./keycloak/data:/opt/keycloak/data
-      - ./keycloak/import:/opt/keycloak/data/import
+      # - ./keycloak/import:/opt/keycloak/data/import
     command:
       - start-dev
       - --import-realm
@@ -67,21 +67,21 @@ services:
     networks:
       - est-network
 
-  frontend:
-    build: ./est-sale-frontend
-    container_name: frontend
-    environment:
-      REACT_APP_KEYCLOAK_URL: http://keycloak:8080
-      REACT_APP_KEYCLOAK_REALM: ent-realm
-      REACT_APP_KEYCLOAK_CLIENT_ID: ent-client
-      REACT_APP_API_URL: http://fastapi:8000
-    ports:
-      - "3000:3000"
-    depends_on:
-      fastapi:
-        condition: service_started
-    networks:
-      - est-network
+  # frontend:
+  #   build: ./est-sale-frontend
+  #   container_name: frontend
+  #   environment:
+  #     REACT_APP_KEYCLOAK_URL: http://keycloak:8080
+  #     REACT_APP_KEYCLOAK_REALM: ent-realm
+  #     REACT_APP_KEYCLOAK_CLIENT_ID: ent-client
+  #     REACT_APP_API_URL: http://fastapi:8000
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     fastapi:
+  #       condition: service_started
+  #   networks:
+  #     - est-network
 
 volumes:
   cassandra_data:

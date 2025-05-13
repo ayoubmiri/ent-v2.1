@@ -3,8 +3,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
-  
-
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
@@ -43,6 +41,18 @@ const Navbar = () => {
             <Link to="/evenements" className="px-3 py-1 rounded hover:bg-est-light-blue hover:bg-opacity-30 transition">Événements</Link>
             <Link to="/contact" className="px-3 py-1 rounded hover:bg-est-light-blue hover:bg-opacity-30 transition">Contact</Link>
             
+            {user?.role === 'etudiant' && (
+              <Link to="/espace-etudiant" className="px-3 py-1 rounded hover:bg-est-light-blue hover:bg-opacity-30 transition">
+                Espace Étudiant
+              </Link>
+            )}
+            
+            {user?.role === 'enseignant' && (
+              <Link to="/espace-enseignant" className="px-3 py-1 rounded hover:bg-est-light-blue hover:bg-opacity-30 transition">
+                Espace Enseignant
+              </Link>
+            )}
+            
             {user ? (
               <>
                 <button 
@@ -60,12 +70,12 @@ const Navbar = () => {
               </>
             ) : (
               <button
-            onClick={login}
-            disabled={loading}
-             className="px-3 py-1 bg-est-yellow text-black rounded hover:bg-yellow-600 transition">
-            {loading ? 'Chargement...' : 'Connexion'}
-          </button>
-              //<Link to="/connexion" className="px-3 py-1 bg-est-yellow text-black rounded hover:bg-yellow-600 transition">Connexion</Link>
+                onClick={login}
+                disabled={loading}
+                className="px-3 py-1 bg-est-yellow text-black rounded hover:bg-yellow-600 transition"
+              >
+                {loading ? 'Chargement...' : 'Connexion'}
+              </button>
             )}
           </nav>
           
@@ -89,6 +99,26 @@ const Navbar = () => {
             <Link to="/evenements" className="px-3 py-2 rounded hover:bg-est-light-blue hover:bg-opacity-30 transition" onClick={() => setMobileMenuOpen(false)}>Événements</Link>
             <Link to="/contact" className="px-3 py-2 rounded hover:bg-est-light-blue hover:bg-opacity-30 transition" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
             
+            {user?.role === 'etudiant' && (
+              <Link 
+                to="/espace-etudiant" 
+                className="px-3 py-2 rounded hover:bg-est-light-blue hover:bg-opacity-30 transition" 
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Espace Étudiant
+              </Link>
+            )}
+            
+            {user?.role === 'enseignant' && (
+              <Link 
+                to="/espace-enseignant" 
+                className="px-3 py-2 rounded hover:bg-est-light-blue hover:bg-opacity-30 transition" 
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Espace Enseignant
+              </Link>
+            )}
+            
             {user ? (
               <>
                 <button 
@@ -105,14 +135,13 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-                 <button
-            onClick={login}
-            disabled={loading}
-             className="px-3 py-1 bg-est-yellow text-black rounded hover:bg-yellow-600 transition">
-            {loading ? 'Chargement...' : 'Connexion'}
-          </button>
-              
-              //<Link to="/connexion" className="px-3 py-2 bg-est-yellow text-black rounded hover:bg-yellow-600 transition text-center" onClick={() => setMobileMenuOpen(false)}>Connexion</Link>
+              <button
+                onClick={login}
+                disabled={loading}
+                className="px-3 py-2 bg-est-yellow text-black rounded hover:bg-yellow-600 transition text-left"
+              >
+                {loading ? 'Chargement...' : 'Connexion'}
+              </button>
             )}
           </div>
         </div>
