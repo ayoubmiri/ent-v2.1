@@ -1,67 +1,73 @@
-// src/hooks/useAuth.js
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
-import keycloak from '../keycloak';
+import { useState, useEffect } from 'react';
 
-const AuthContext = createContext();
-
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const initialized = useRef(false);  // Ensures Keycloak only initializes once
+export const useAuth = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if the user token is already stored in localStorage
-    const storedToken = localStorage.getItem('keycloak_token');
-    const storedUser = JSON.parse(localStorage.getItem('keycloak_user'));
-    if (storedToken && storedUser) {
-      // If stored token and user data exist, restore session
-      keycloak.token = storedToken;
-      keycloak.tokenParsed = storedUser;
-      setUser(storedUser);
-    }
-
-    if (initialized.current) return; // Avoid re-initializing Keycloak
-    initialized.current = true;
-
-    keycloak
-      .init({
-        onLoad: 'check-sso',
-        silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
-      })
-      .then((authenticated) => {
-        if (authenticated) {
-          const profile = {
-            username: keycloak.tokenParsed?.preferred_username,
-            role: keycloak.tokenParsed?.realm_access?.roles?.[0] || 'user',
-          };
-          setUser(profile);
-          
-          // Store the token and user data in localStorage for persistence
-          localStorage.setItem('keycloak_token', keycloak.token);
-          localStorage.setItem('keycloak_user', JSON.stringify(profile));
-        }
-      })
-      .catch((err) => {
-        console.error('Keycloak init failed', err);
-      });
+    const token = localStorage.getItem('access_token'); // Changed from 'token' to 'access_token'
+    setIsAuthenticated(!!token);
+    setLoading(false);
   }, []);
 
-  const login = () => {
-    keycloak.login();
-  };
-
-  const logout = () => {
-    // Remove session data from localStorage on logout
-    localStorage.removeItem('keycloak_token');
-    localStorage.removeItem('keycloak_user');
-    keycloak.logout();
-    setUser(null);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return { isAuthenticated, loading };
 };
 
-export const useAuth = () => useContext(AuthContext);
+
+
+// import { useState, useEffect } from 'react';
+
+// export const useAuth = () => {
+//   const [isAuthenticated, setIsAuthenticated] = useState(false);
+//   const [user, setUser] = useState(null);
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const token = localStorage.getItem('token');
+//     if (token) {
+//       try {
+//         // Decode token or fetch user data; assuming token contains user info or role
+//         // For simplicity, assuming role is stored in localStorage or derived from token
+//         const storedRole = localStorage.getItem('userRole'); // Adjust based on your setup
+//         setUser({ role: storedRole || 'etudiant' }); // Default to 'etudiant' if no role
+//         setIsAuthenticated(true);
+//       } catch (error) {
+//         console.error('Error decoding token:', error);
+//         setIsAuthenticated(false);
+//         setUser(null);
+//       }
+//     } else {
+//       setIsAuthenticated(false);
+//       setUser(null);
+//     }
+//     setLoading(false);
+//   }, []);
+
+//   const logout = () => {
+//     localStorage.removeItem('token');
+//     localStorage.removeItem('userRole'); // Remove role if stored
+//     setIsAuthenticated(false);
+//     setUser(null);
+//   };
+
+//   return { isAuthenticated, user, logout, loading };
+// };
+
+
+
+
+
+// // import { useState, useEffect } from 'react';
+
+// // export const useAuth = () => {
+// //   const [isAuthenticated, setIsAuthenticated] = useState(false);
+// //   const [loading, setLoading] = useState(true);
+
+// //   useEffect(() => {
+// //     const token = localStorage.getItem('token');
+// //     setIsAuthenticated(!!token);
+// //     setLoading(false);
+// //   }, []);
+
+// //   return { isAuthenticated, loading };
+// // };

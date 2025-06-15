@@ -1,11 +1,18 @@
-fastapi==0.95.2
-uvicorn==0.22.0
-python-jose[cryptography]==3.3.0
+fastapi
+fastapi-keycloak
+uvicorn
+cassandra-driver
+python-jose
+python-multipart
+passlib
+pydantic
+pydantic[email]
+pydantic-settings
+# cassandra-cqlengine
 cryptography
-
-python-keycloak==2.14.0
-cassandra-driver==3.28.0
-httpx==0.24.1
-python-multipart==0.0.6
+httpx 
+python-jose[cryptography]
+pyjwt
 python-dotenv
+python-keycloak>=3.9.0
 

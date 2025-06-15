@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import FormationsPage from './pages/FormationsPage';
 import NewsPage from './pages/NewsPage';
+import Login from './components/Auth/Login';
 import EventsPage from './pages/EventsPage';
 import ResearchPage from './pages/ResearchPage';
 import ContactPage from './pages/ContactPage';
@@ -25,34 +26,43 @@ function App() {
         <Route path="/actualites" element={<NewsPage />} />
         <Route path="/admission" element={<AdmissionPage />} />
         <Route path="/recherche" element={<ResearchPage />} />
-        <Route path="/actualites" element={<NewsPage />} />
         <Route path="/evenements" element={<EventsPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/login" element={<Login />} />
         
-        {/* espace Private Routes */}
-        <Route path="/espace-etudiant" element={
+        {/* Protected Routes */}
+        <Route
+          path="/espace-etudiant"
+          element={
             <PrivateRoute role="etudiant">
               <EspaceEtudiant />
             </PrivateRoute>
-          } />
-        
-        <Route path="/espace-enseignant" element={
+          }
+        />
+        <Route
+          path="/espace-enseignant"
+          element={
             <PrivateRoute role="enseignant">
               <EspaceEnseignant />
             </PrivateRoute>
-          } />
-        
-        {/* Profile Private Routes */}         
-        <Route path="/profil/etudiant" element={
+          }
+        />
+        <Route
+          path="/profil/etudiant"
+          element={
             <PrivateRoute role="etudiant">
               <EtudiantProfile />
             </PrivateRoute>
-          } />
-        <Route path="/profil/enseignant" element={
+          }
+        />
+        <Route
+          path="/profil/enseignant"
+          element={
             <PrivateRoute role="enseignant">
               <EnseignantProfile />
             </PrivateRoute>
-          } />
+          }
+        />
       </Routes>
       <Footer />
     </div>

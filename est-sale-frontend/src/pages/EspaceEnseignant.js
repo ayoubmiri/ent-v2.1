@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { getTeacherByEmail, getTeacherById } from '../services/teacherService';
 import { 
   FaChalkboardTeacher, 
   FaBook, 
@@ -17,6 +19,69 @@ import {
 } from 'react-icons/fa';
 
 const EspaceEnseignant = () => {
+  const { user, loading: authLoading } = useAuth();
+  const [teacherData, setTeacherData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchTeacherData = async () => {
+      if (authLoading) return; // Wait for auth to initialize
+
+      console.log('User from useAuth:', user); // Debug
+
+      if (!user) {
+        setError('No user is logged in. Please log in to view your dashboard.');
+        setLoading(false);
+        return;
+      }
+
+      if (!user.email) {
+        setError('User email is not available. Please ensure your account is properly configured.');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Fetch teacher by email to get UUID with cache-busting
+        console.log('Fetching teacher by email:', user.email); // Debug
+        const emailResponse = await getTeacherByEmail(user.email, { _t: Date.now() });
+        console.log('Email response:', emailResponse); // Debug
+
+        // Filter for the record matching user.email
+        const teacherByEmail = Array.isArray(emailResponse)
+          ? emailResponse.find(teacher => teacher.email === user.email)
+          : emailResponse;
+
+        if (!teacherByEmail?.id) {
+          throw new Error(`Teacher ID (UUID) not found for email: ${user.email}`);
+        }
+
+        // Fetch full teacher profile by UUID with cache-busting
+        console.log('Fetching teacher by ID:', teacherByEmail.id); // Debug
+        const teacher = await getTeacherById(teacherByEmail.id, { _t: Date.now() });
+        console.log('Teacher data:', teacher); // Debug
+
+        setTeacherData(teacher);
+      } catch (err) {
+        console.error('Failed to fetch teacher data:', err);
+        setError(`Failed to load teacher information for ${user.email}. Ensure your email is registered or contact support.`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeacherData();
+  }, [user, authLoading]);
+
+  if (loading || authLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-est-blue"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
       {/* Main Content */}
@@ -79,7 +144,19 @@ const EspaceEnseignant = () => {
         {/* Main Content Area */}
         <main className="flex-1 p-8 bg-white m-4 rounded-lg shadow-sm">
           <div className="welcome-banner bg-est-blue text-white p-8 rounded-lg mb-8 text-center">
-            <h1 className="text-2xl font-bold mb-4">Espace Enseignant</h1>
+            <h1 className="text-2xl font-bold mb-4">
+              Bienvenue, {teacherData ? `${teacherData.first_name} ${teacherData.last_name}` : 'Enseignant'}!
+            </h1>
+            {teacherData && (
+              <div className="text-sm opacity-90 mb-4">
+                <p>Email: {teacherData.email}</p>
+                <p>Spécialité: {teacherData.specialization || 'N/A'}</p>
+                <p>Grade: {teacherData.grade || 'N/A'}</p>
+              </div>
+            )}
+            {error && (
+              <p className="text-red-300 mb-4">{error}</p>
+            )}
             <p className="text-lg opacity-90 mb-6">Outils pédagogiques et administratifs pour les enseignants</p>
             <button className="bg-est-yellow text-black px-6 py-2 rounded hover:bg-yellow-600 transition">
               Consulter le guide
