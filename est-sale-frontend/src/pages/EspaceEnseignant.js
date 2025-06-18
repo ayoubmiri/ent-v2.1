@@ -198,7 +198,7 @@ const ServiceGrid = () => {
       icon: <FaChalkboardTeacher className="mr-2" />,
       title: "Gestion des Cours",
       description: "Planifier vos cours, déposer des ressources et suivre les progressions.",
-      link: "#"
+      link: "/espace-enseignant/upload"
     },
     {
       icon: <FaClipboardCheck className="mr-2" />,

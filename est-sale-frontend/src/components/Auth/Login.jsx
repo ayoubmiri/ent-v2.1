@@ -35,7 +35,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <h2 className="text-2xl font-bold text-center">Admin Panel Login</h2>
+        <h2 className="text-2xl font-bold text-center">ENT  Login</h2>
         {error && (
           <div
             className="text-red-500 text-center"

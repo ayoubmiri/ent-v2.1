@@ -15,6 +15,8 @@ import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import EspaceEtudiant from './pages/EspaceEtudiant';
 import EspaceEnseignant from './pages/EspaceEnseignant';
+import Chatbot from './pages/chatbot'; 
+import UploadPage from './pages/UploadPage';  
 
 function App() {
   return (
@@ -29,6 +31,7 @@ function App() {
         <Route path="/evenements" element={<EventsPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/chatbot" element={<Chatbot />} /> {/* Chatbot route */} 
         
         {/* Protected Routes */}
         <Route
@@ -47,6 +50,14 @@ function App() {
             </PrivateRoute>
           }
         />
+         <Route
+            path="/espace-enseignant/upload"
+            element={
+              <PrivateRoute role="enseignant">
+                <UploadPage />
+              </PrivateRoute>
+            }
+          />
         <Route
           path="/profil/etudiant"
           element={

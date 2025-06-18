@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link , useNavigate} from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getStudentByEmail, getStudentById, getFiliereById } from '../services/studentService';
 import { 
@@ -23,6 +23,7 @@ const EspaceEtudiant = () => {
   const [studentData, setStudentData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStudentData = async () => {
@@ -177,7 +178,8 @@ const EspaceEtudiant = () => {
               <p className="text-red-300 mb-4">{error}</p>
             )}
             <p className="text-lg opacity-90 mb-6">Nous sommes là pour vous aider dans votre parcours universitaire</p>
-            <button className="bg-est-yellow text-black px-6 py-2 rounded hover:bg-yellow-600 transition">
+            <button className="bg-est-yellow text-black px-6 py-2 rounded hover:bg-yellow-600 transition"
+            onClick={() => navigate('/chatbot')}>
               Lancer une conversation
             </button>
           </div>
@@ -200,12 +202,19 @@ const EspaceEtudiant = () => {
       </div>
       
       {/* AI Assistant */}
-      <div 
+      <Link
+        to="/chatbot"
+        className="ai-assistant fixed bottom-8 right-8 bg-est-blue text-white w-14 h-14 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition"
+        title="Assistant IA Ollama"
+      >
+        <FaRobot className="text-2xl" />
+      </Link>
+      {/* <div 
         className="ai-assistant fixed bottom-8 right-8 bg-est-blue text-white w-14 h-14 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition" 
         title="Assistant IA Ollama"
       >
         <FaRobot className="text-2xl" />
-      </div>
+      </div> */}
     </div>
   );
 };
